@@ -27,6 +27,19 @@ public class Graph {
         return Optional.empty();
     }
 
+    public Map<String, Integer> getTracks(String from) {
+        // This is not efficient. If efficiency matters, we should instead hold
+        // a map of maps. This would map each "from" station to a map of "to" stations
+        // to distances.
+        Map<String, Integer> result = new HashMap<>();
+        for (Map.Entry<String, Integer> track : tracks.entrySet()) {
+            if (track.getKey().startsWith(from)) {
+                result.put(track.getKey().substring(1), track.getValue());
+            }
+        }
+        return result;
+    }
+
     private static int parseDistance(String trackString) {
         try {
             return Integer.parseInt(trackString.substring(2));
