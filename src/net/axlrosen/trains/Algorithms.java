@@ -1,6 +1,7 @@
 package net.axlrosen.trains;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Algorithms {
 
@@ -27,15 +28,37 @@ public class Algorithms {
         return Optional.of(distance);
     }
 
-    public List<String> findAllTrips(String startStation, int maxStops) {
+    public List<Trip> findAllTripsLessThan(String startStation, int maxDistance) {
         // 'currentTrips' contains each trip as we are building them up, station by station.
         // So every trip in 'currentTrips' always have the same length. Whereas 'result'
         // contains each trip that we build along the way, so it will contain trips
         // of different lengths.
-        List<String> result = new ArrayList<>();
-        List<String> currentTrips = new ArrayList<>();
+        List<Trip> result = new ArrayList<>();
+        List<Trip> currentTrips = new ArrayList<>();
 
-        currentTrips.add(startStation);
+        currentTrips.add(new Trip(startStation, 0));
+
+        do {
+            currentTrips = addOneStop(currentTrips).stream()
+                    .filter(trip -> trip.distance <= maxDistance)
+                    .collect(Collectors.toList());
+            result.addAll(currentTrips);
+        }
+        while(!currentTrips.isEmpty());
+
+        return result;
+    }
+
+
+    public List<Trip> findAllTrips(String startStation, int maxStops) {
+        // 'currentTrips' contains each trip as we are building them up, station by station.
+        // So every trip in 'currentTrips' always have the same length. Whereas 'result'
+        // contains each trip that we build along the way, so it will contain trips
+        // of different lengths.
+        List<Trip> result = new ArrayList<>();
+        List<Trip> currentTrips = new ArrayList<>();
+
+        currentTrips.add(new Trip(startStation, 0));
 
         for (int i = 0; i < maxStops; i++) {
             currentTrips = addOneStop(currentTrips);
@@ -47,13 +70,12 @@ public class Algorithms {
 
 
     // Return all possible trips that are one stop longer than the input list of trips.
-    private List<String> addOneStop(List<String> trips) {
-        List<String> result = new ArrayList<>();
-        for (String trip : trips) {
-            String lastStation = trip.substring(trip.length() - 1);
-            Map<String, Integer> tracks = graph.getTracks(lastStation);
-            for (String destStation : tracks.keySet()) {
-                result.add(trip + destStation);
+    private List<Trip> addOneStop(List<Trip> trips) {
+        List<Trip> result = new ArrayList<>();
+        for (Trip trip : trips) {
+            Map<String, Integer> tracks = graph.getTracks(trip.getLastStation());
+            for (Map.Entry<String, Integer> track : tracks.entrySet()) {
+                result.add(trip.extend(track.getKey(), track.getValue()));
             }
         }
         return result;

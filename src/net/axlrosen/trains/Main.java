@@ -20,18 +20,23 @@ public class Main {
         System.out.println("Output #5: " + writeDistance(alg,"A-E-D"));
 
         long answer6 = alg.findAllTrips("C", 3).stream()
-                .filter(trip -> trip.endsWith("C"))
+                .filter(trip -> trip.getLastStation().equals("C"))
                 .count();
         System.out.println("Output #6: " + answer6);
 
         long answer7 = alg.findAllTrips("A", 4).stream()
-                .filter(trip -> trip.endsWith("C"))
-                .filter(trip -> trip.length() == 5)
+                .filter(trip -> trip.getLastStation().equals("C"))
+                .filter(trip -> trip.path.length() == 5)
                 .count();
         System.out.println("Output #7: " + answer7);
 
         System.out.println("Output #8: " + alg.getShortestRoute("A", "C"));
         System.out.println("Output #9: " + alg.getShortestRoute("B", "B"));
+
+        long answer10 = alg.findAllTripsLessThan("C", 30).stream()
+                .filter(trip -> trip.getLastStation().equals("C"))
+                .count();
+        System.out.println("Output #10: " + answer10);
     }
 
     private static String writeDistance(Algorithms alg, String path) {
