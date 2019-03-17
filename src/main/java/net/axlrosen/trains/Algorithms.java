@@ -82,7 +82,7 @@ public class Algorithms {
     }
 
     // Return the total distance of the shortest route to the given destination.
-    public int getShortestRoute(String from, String to) {
+    public Optional<Integer> getShortestRoute(String from, String to) {
         Map<String, Integer> trips = new HashMap<>();
         trips.put(from, 0);
 
@@ -116,7 +116,10 @@ public class Algorithms {
         // because in this case I favored readability over efficiency, but if speed is important,
         // that condition could be added.
 
-        return trips.get(to);
+        if (!trips.containsKey(to)) {
+            return Optional.empty();
+        }
+        return Optional.of(trips.get(to));
     }
 
     // If we have no trip to this destination, or if the new trip is shorter than the old trip,
